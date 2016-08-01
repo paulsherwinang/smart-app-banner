@@ -34,10 +34,9 @@ var mixins = {
 	}
 };
 
-var SmartBanner = function(options) {
+var SmartBanner = function(options, element) {
 	var agent = ua(navigator.userAgent);
 	this.options = extend({}, {
-		appendToId: '',
 		daysHidden: 15,
 		daysReminder: 90,
 		appStoreLanguage: userLang, // Language code for App Store
@@ -87,14 +86,14 @@ var SmartBanner = function(options) {
 		return;
 	}
 
-	this.create(options.appendToId);
+	this.create(element);
 	this.show();
 };
 
 SmartBanner.prototype = {
 	constructor: SmartBanner,
 
-	create: function(elemId) {
+	create: function(element) {
 		var link = this.getStoreLink();
 		var inStore = this.options.price[this.type] + ' - ' + this.options.store[this.type];
 		var icon;
@@ -129,20 +128,7 @@ SmartBanner.prototype = {
 							'</a>' +
 						'</div>';
 
-		if(elemId){
-			var elem = document.getElementById(elemId);
-			elem.appendChild(sb);
-		}
-		else {
-			if (doc.body) {
-				doc.body.appendChild(sb);
-			}
-			else if (doc) {
-				doc.addEventListener('DOMContentLoaded', function(){
-					doc.body.appendChild(sb);
-				});
-			}
-		}
+		element.appendChild(sb);
 
 		q('.smartbanner-button', sb).addEventListener('click', this.install.bind(this), false);
 		q('.smartbanner-close', sb).addEventListener('click', this.close.bind(this), false);
