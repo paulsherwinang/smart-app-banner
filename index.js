@@ -37,6 +37,7 @@ var mixins = {
 var SmartBanner = function(options) {
 	var agent = ua(navigator.userAgent);
 	this.options = extend({}, {
+		appendToId: '',
 		daysHidden: 15,
 		daysReminder: 90,
 		appStoreLanguage: userLang, // Language code for App Store
@@ -86,14 +87,14 @@ var SmartBanner = function(options) {
 		return;
 	}
 
-	this.create();
+	this.create(options.appendToId);
 	this.show();
 };
 
 SmartBanner.prototype = {
 	constructor: SmartBanner,
 
-	create: function() {
+	create: function(elemId) {
 		var link = this.getStoreLink();
 		var inStore = this.options.price[this.type] + ' - ' + this.options.store[this.type];
 		var icon;
@@ -128,14 +129,19 @@ SmartBanner.prototype = {
 							'</a>' +
 						'</div>';
 
-		//there isn’t neccessary a body
-		if (doc.body) {
-			doc.body.appendChild(sb);
+		if(elemId){
+			var elem = document.getElementById(elemId);
+			elem.appendChild(sb);
 		}
-		else if (doc) {
-			doc.addEventListener('DOMContentLoaded', function(){
+		else {
+			if (doc.body) {
 				doc.body.appendChild(sb);
-			});
+			}
+			else if (doc) {
+				doc.addEventListener('DOMContentLoaded', function(){
+					doc.body.appendChild(sb);
+				});
+			}
 		}
 
 		q('.smartbanner-button', sb).addEventListener('click', this.install.bind(this), false);
